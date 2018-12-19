@@ -1,4 +1,28 @@
-# Getting Started With Schematics
+# ng-test-runner-schematics
+## About
+[Schematics](https://www.npmjs.com/package/@angular-devkit/schematics) for [ng-test-runner](https://github.com/Pragmatists/ng-test-runner). It generates Angular `Component` with spec where `ng-test-runner` is configured and ready to run.
+## Installation
+Still not published on npmjs. Currently you can use development version. For usage see [Development](#development). 
+## Development
+In `ng-test-runner-schematics` repo run: 
+```bash
+npm test && npm run build
+```
+In another angular project run:
+```bash
+npm link PATH-TO-ng-test-runner-schematic
+```
+# Usage
+## Test for Presentational Component
+```bash
+ng g ng-test-runner-schematics:ngc --name=my-compoment
+```
+## Test for Smart Component (that uses http)
+```bash
+ng g ng-test-runner-schematics:ngc --name=my-compoment --server
+```
+## Schematics CLI info
+### Getting Started With Schematics
 
 This repository is a basic Schematic implementation that serves as a starting point to create and publish Schematics to NPM.
 
