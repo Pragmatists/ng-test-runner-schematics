@@ -1,4 +1,5 @@
 # ng-test-runner-schematics
+[![Build Status](https://travis-ci.org/Pragmatists/ng-test-runner-schematics.svg?branch=master)](https://travis-ci.org/Pragmatists/ng-test-runner-schematics.svg?branch=master)
 ## About
 [Schematics](https://www.npmjs.com/package/@angular-devkit/schematics) for [ng-test-runner](https://github.com/Pragmatists/ng-test-runner). It generates Angular `Component` with spec where `ng-test-runner` is configured and ready to run.
 ## Installation
