@@ -1,0 +1,47 @@
+{
+  "$schema" : "http://json-schema.org/schema",
+  "id" : "my-first-schema",
+  "title" : "my1er Schema",
+  "type" : "object",
+  "properties" : {
+    "name" : {
+      "type" : "string",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "server": {
+      "type" : "boolean",
+      "description" : "Flag to indicate if a server is generated",
+      "default": false
+    },
+    "path" : {
+      "type" : "string",
+      "format" : "path",
+      "description": "The path to create the component.",
+      "visible": false
+    },
+    "flat": {
+      "type": "boolean",
+      "description": "Flag to indicate if a directory is created.",
+      "default": false
+    },
+    "project": {
+      "type": "string",
+      "description": "The name of the project.",
+      "$default": {
+        "$source": "projectName"
+      }
+    },
+    "module":  {
+      "type": "string",
+      "description": "The declaring module.",
+      "alias": "m"
+    },
+    "sourceDir" : {
+      "type" : "string",
+      "default" : "src/app"
+    }
+  }
+}

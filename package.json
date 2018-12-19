@@ -1,0 +1,27 @@
+{
+  "name": "ng-test-runner-schematics",
+  "version": "0.0.0",
+  "description": "A blank schematics",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && jasmine src/**/*_spec.js"
+  },
+  "keywords": [
+    "schematics"
+  ],
+  "author": "",
+  "license": "MIT",
+  "schematics": "./src/collection.json",
+  "dependencies": {
+    "@angular-devkit/core": "^7.0.2",
+    "@angular-devkit/schematics": "^7.0.2",
+    "@schematics/angular": "^7.0.2",
+    "typescript": "^3.2.2"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^2.6.0",
+    "@types/node": "^8.0.31",
+    "jasmine": "^2.8.0",
+    "schematics-utilities": "^1.1.1"
+  }
+}

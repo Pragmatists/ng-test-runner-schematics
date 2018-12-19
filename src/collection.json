@@ -1,0 +1,11 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "ng-test-runner-schematics": {
+      "aliases": ["ngc"],
+      "description": "Schematic that generates component with spec in ng-test-runner format",
+      "factory": "./ng-test-runner-schematics",
+      "schema" : "./ng-test-runner-schematics/schema.json"
+    }
+  }
+}
