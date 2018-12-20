@@ -6,4 +6,5 @@ export interface SchemaOptions {
     project: string;
     module: string;
     sourceDir: string;
+    fast: boolean;
 }

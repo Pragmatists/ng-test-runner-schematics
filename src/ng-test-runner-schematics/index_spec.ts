@@ -124,6 +124,20 @@ describe('ng-test-runner-schematics', () => {
         });
     });
 
+    describe('speed hack', () => {
+        it('should copy speed hack to test-utils directory', () => {
+            const tree = runNgTestRunnerSchematic({name: 'fast', path: 'src/app', fast: true});
+
+            verifyThat.in(tree).file('/src/test-utils/test-speed-hack.ts').exists()
+        });
+
+        it('without --fast speed hack should not be created', () => {
+            const tree = runNgTestRunnerSchematic({name: 'fast', path: 'src/app', fast: false});
+
+            verifyThat.in(tree).file('/src/test-utils/test-speed-hack.ts').doesNotExist()
+        });
+    });
+
     function runNgTestRunnerSchematic(options?: { [key: string]: any }) {
 
         const opts = {

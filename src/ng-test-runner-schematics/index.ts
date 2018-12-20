@@ -17,7 +17,7 @@ import { getFirstNgModuleName, getTsSourceFile } from './utils';
 import { normalize, relative, strings } from '@angular-devkit/core';
 
 export default function (options: SchemaOptions): Rule {
-
+    const testHelperDir = '/src/test-utils';
     return chain([
         externalSchematic('@schematics/angular', 'component', {
                 ...options,
@@ -47,6 +47,14 @@ export default function (options: SchemaOptions): Rule {
             ]);
 
             return mergeWith(templateSource, MergeStrategy.Default);
+        },
+        () => {
+            const source = apply(url('./files'), [
+                filter(file => file.includes('test-speed-hack.ts')),
+                filter(() => options.fast),
+                move(testHelperDir)
+            ]);
+            return mergeWith(source, MergeStrategy.Overwrite);
         }
     ]);
 }

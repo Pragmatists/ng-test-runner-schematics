@@ -16,6 +16,11 @@
       "description" : "Flag to indicate if a server is generated",
       "default": false
     },
+    "fast": {
+      "type": "boolean",
+      "description" : "Flag to indicate if speed hack should be added",
+      "default": false
+    },
     "path" : {
       "type" : "string",
       "format" : "path",
