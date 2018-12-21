@@ -128,13 +128,33 @@ describe('ng-test-runner-schematics', () => {
         it('should copy speed hack to test-utils directory', () => {
             const tree = runNgTestRunnerSchematic({name: 'fast', path: 'src/app', fast: true});
 
-            verifyThat.in(tree).file('/src/test-utils/test-speed-hack.ts').exists()
+            const hackPath = '/src/test-utils/test-speed-hack.ts';
+            verifyThat.in(tree).file(hackPath).exists();
+            expect(tree.readContent(hackPath)).toMatch(/export function speedHack/);
         });
 
         it('without --fast speed hack should not be created', () => {
-            const tree = runNgTestRunnerSchematic({name: 'fast', path: 'src/app', fast: false});
+            const tree = runNgTestRunnerSchematic({name: 'slow', path: 'src/app', fast: false});
 
             verifyThat.in(tree).file('/src/test-utils/test-speed-hack.ts').doesNotExist()
+        });
+
+        it('should include speed hack in spec', () => {
+            const tree: UnitTestTree = runNgTestRunnerSchematic({name: 'fast', path: 'src/app/first/second', fast: true});
+
+            const specContent = tree.readContent('/src/app/first/second/fast/fast.component.spec.ts');
+            expect(specContent).toMatch(/beforeAll\(/);
+            expect(specContent).toMatch(/speedHack\(\)/);
+            expect(specContent).toMatch(/import { speedHack } from '..\/..\/..\/..\/test-utils\/test-speed-hack'/);
+        });
+
+        it('should not overwrite file if it exists', () => {
+            const hackPath = '/src/test-utils/test-speed-hack.ts';
+            appTree.create(hackPath, 'old content');
+
+            const tree: UnitTestTree = runNgTestRunnerSchematic({name: 'fast', path: 'src/app', fast: true});
+            expect(tree.readContent(hackPath)).not.toMatch('export function speedHack');
+            expect(tree.readContent(hackPath)).toEqual('old content');
         });
     });
 
