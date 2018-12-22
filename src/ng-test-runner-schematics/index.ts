@@ -20,6 +20,28 @@ import { basename } from 'path';
 const testHelperDir = '/src/test-utils';
 const speedHackName = 'test-speed-hack.ts';
 
+function findModuleClass(tree: Tree, modulePath: Path) {
+    if (!modulePath) {
+        return null;
+    }
+    const source = getTsSourceFile(tree, modulePath);
+    return getFirstNgModuleName(source as any);
+}
+
+function getMovePath(options: SchemaOptions): Path {
+    return (options.flat) ?
+        normalize('/' + options.path) :
+        normalize('/' + options.path + '/' + strings.dasherize(options.name));
+}
+
+function getModuleTemplatePath(movePath: Path, modulePath: Path) {
+    if (!modulePath) {
+        return '';
+    }
+    let moduleTemplatePath: string = relative(movePath, modulePath);
+    return moduleTemplatePath.substring(0, moduleTemplatePath.length - 3);
+}
+
 export default function (options: SchemaOptions): Rule {
 
     return chain([
@@ -28,15 +50,11 @@ export default function (options: SchemaOptions): Rule {
                 spec: false
         }),
         (tree: Tree) => {
+            const movePath = getMovePath(options);
             const modulePath = findModuleFromOptions(tree, options);
-            const source = getTsSourceFile(tree, modulePath);
-            const moduleClass = getFirstNgModuleName(source as any);
-            const movePath = (options.flat) ?
-                normalize('/' + options.path) :
-                normalize('/' + options.path + '/' + strings.dasherize(options.name));
-            let moduleTemplatePath: string = relative(movePath, modulePath);
-            moduleTemplatePath = moduleTemplatePath.substring(0, moduleTemplatePath.length - 3);
-            let speedHackTemplatePath: string = speedHackPath(movePath);
+            const moduleClass = findModuleClass(tree, modulePath);
+            const moduleTemplatePath = getModuleTemplatePath(movePath, modulePath);
+            const speedHackTemplatePath: string = speedHackPath(movePath);
             const templateOptions = {
                 moduleClass,
                 moduleTemplatePath,

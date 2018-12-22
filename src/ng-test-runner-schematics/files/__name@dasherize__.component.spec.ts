@@ -1,8 +1,9 @@
 import { async } from '@angular/core/testing';
 import test, { App, expectThat<% if(server) { %>, http, Server<% } %> } from 'ng-test-runner';<% if(fast) { %>
 import { speedHack } from '<%= speedHackTemplatePath %>';<% } %>
-import { <%= classify(name) %>Component } from './<%= dasherize(name) %>.component';
-import { <%=  moduleClass %> } from '<%= moduleTemplatePath %>';
+import { <%= classify(name) %>Component } from './<%= dasherize(name) %>.component';<% if (!skipImport) { %>
+import { <%=  moduleClass %> } from '<%= moduleTemplatePath %>'; <% } else { %>
+import { NgModule } from '@angular/core';<% } %>
 
 describe('<%= classify(name) %>Component', () => {
   let app: App;<% if(server) { %>
@@ -13,7 +14,7 @@ describe('<%= classify(name) %>Component', () => {
   });
 <% } %>
   beforeEach(async(() => {
-    app = test(<%= moduleClass %>);<% if(server) { %>
+    app = test(<% if (skipImport) { %>TestModule<% } else { %><%= moduleClass %><% } %>);<% if(server) { %>
     server = http();<% } %>
   }));
 <% if(server) { %>
@@ -29,3 +30,11 @@ describe('<%= classify(name) %>Component', () => {
     );
   }));
 });
+<% if (skipImport) { %>
+@NgModule({
+    declarations: [
+        <%= classify(name) %>Component
+    ]
+})
+class TestModule {}
+<% } %>

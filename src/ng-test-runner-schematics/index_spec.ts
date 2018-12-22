@@ -158,6 +158,19 @@ describe('ng-test-runner-schematics', () => {
         });
     });
 
+    describe('component options', () => {
+        it('skipImport should create TestModule in spec and run it', () => {
+            const tree = runNgTestRunnerSchematic({name: 'foo', path: 'src/app', skipImport: true});
+
+            verifyThat.in(tree).file('/src/app/foo/foo.component.spec.ts').exists();
+            const specContent = tree.readContent('/src/app/foo/foo.component.spec.ts');
+            expect(specContent).toMatch(/app = test\(TestModule\)/);
+            expect(specContent).toMatch(/import { NgModule }/);
+            expect(specContent).toMatch(/@NgModule\({/);
+            expect(specContent).toMatch(/class TestModule {/);
+        });
+    });
+
     function runNgTestRunnerSchematic(options?: { [key: string]: any }) {
 
         const opts = {
