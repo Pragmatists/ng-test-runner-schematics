@@ -1,4 +1,4 @@
-import { ChangeDetection, ViewEncapsulation } from '@schematics/angular/component/schema';
+import {ChangeDetection, ViewEncapsulation} from '@schematics/angular/component/schema';
 
 export interface SchemaOptions {
     server: boolean;

@@ -1,15 +1,12 @@
-import { SchematicTestRunner, UnitTestTree } from '@angular-devkit/schematics/testing';
-import { Schema as WorkspaceOptions } from '@schematics/angular/workspace/schema';
-import { Schema as ApplicationOptions } from '@schematics/angular/application/schema';
-import { EOL } from 'os';
+import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
+import {Schema as WorkspaceOptions} from '@schematics/angular/workspace/schema';
+import {Schema as ApplicationOptions} from '@schematics/angular/application/schema';
+import {EOL} from 'os';
 
 const collectionPath = require.resolve('../collection.json');
 
 describe('ng-test-runner-schematics', () => {
-    const schematicRunner = new SchematicTestRunner(
-        'ng-test-runner-schematics',
-        collectionPath
-    );
+    const schematicRunner = new SchematicTestRunner('ng-test-runner-schematics', collectionPath);
 
     let appTree: UnitTestTree;
     const workspaceOptions: WorkspaceOptions = {
@@ -30,19 +27,29 @@ describe('ng-test-runner-schematics', () => {
     };
 
     beforeEach(() => {
-        appTree = schematicRunner.runExternalSchematic(
-            '@schematics/angular', 'workspace', workspaceOptions);
-        appTree = schematicRunner.runExternalSchematic(
-            '@schematics/angular', 'application', appOptions, appTree);
+        appTree = schematicRunner.runExternalSchematic('@schematics/angular', 'workspace', workspaceOptions);
+        appTree = schematicRunner.runExternalSchematic('@schematics/angular', 'application', appOptions, appTree);
     });
 
     it('generates all component files', () => {
         const tree = runNgTestRunnerSchematic({name: 'user', path: 'src/app', flat: false});
 
-        verifyThat.in(tree).file('/src/app/user/user.component.css').exists();
-        verifyThat.in(tree).file('/src/app/user/user.component.html').exists();
-        verifyThat.in(tree).file('/src/app/user/user.component.spec.ts').exists();
-        verifyThat.in(tree).file('/src/app/user/user.component.ts').exists();
+        verifyThat
+            .in(tree)
+            .file('/src/app/user/user.component.css')
+            .exists();
+        verifyThat
+            .in(tree)
+            .file('/src/app/user/user.component.html')
+            .exists();
+        verifyThat
+            .in(tree)
+            .file('/src/app/user/user.component.spec.ts')
+            .exists();
+        verifyThat
+            .in(tree)
+            .file('/src/app/user/user.component.ts')
+            .exists();
     });
 
     it('spec should contain ng-test-runner imports', () => {
@@ -89,15 +96,27 @@ describe('ng-test-runner-schematics', () => {
         it('with --flat should generate spec in same directory', () => {
             const tree = runNgTestRunnerSchematic({name: 'flat', path: 'src/app', flat: true});
 
-            verifyThat.in(tree).file('/src/app/flat.component.spec.ts').exists();
-            verifyThat.in(tree).file('/src/app/flat/flat.component.spec.ts').doesNotExist();
+            verifyThat
+                .in(tree)
+                .file('/src/app/flat.component.spec.ts')
+                .exists();
+            verifyThat
+                .in(tree)
+                .file('/src/app/flat/flat.component.spec.ts')
+                .doesNotExist();
         });
 
-        it('without --flat should generate spec in same directory', function () {
+        it('without --flat should generate spec in same directory', () => {
             const tree = runNgTestRunnerSchematic({name: 'no-flat', path: 'src/app', flat: false});
 
-            verifyThat.in(tree).file('/src/app/no-flat.component.spec.ts').doesNotExist();
-            verifyThat.in(tree).file('/src/app/no-flat/no-flat.component.spec.ts').exists();
+            verifyThat
+                .in(tree)
+                .file('/src/app/no-flat.component.spec.ts')
+                .doesNotExist();
+            verifyThat
+                .in(tree)
+                .file('/src/app/no-flat/no-flat.component.spec.ts')
+                .exists();
         });
     });
 
@@ -129,18 +148,28 @@ describe('ng-test-runner-schematics', () => {
             const tree = runNgTestRunnerSchematic({name: 'fast', path: 'src/app', fast: true});
 
             const hackPath = '/src/test-utils/test-speed-hack.ts';
-            verifyThat.in(tree).file(hackPath).exists();
+            verifyThat
+                .in(tree)
+                .file(hackPath)
+                .exists();
             expect(tree.readContent(hackPath)).toMatch(/export function speedHack/);
         });
 
         it('without --fast speed hack should not be created', () => {
             const tree = runNgTestRunnerSchematic({name: 'slow', path: 'src/app', fast: false});
 
-            verifyThat.in(tree).file('/src/test-utils/test-speed-hack.ts').doesNotExist()
+            verifyThat
+                .in(tree)
+                .file('/src/test-utils/test-speed-hack.ts')
+                .doesNotExist();
         });
 
         it('should include speed hack in spec', () => {
-            const tree: UnitTestTree = runNgTestRunnerSchematic({name: 'fast', path: 'src/app/first/second', fast: true});
+            const tree: UnitTestTree = runNgTestRunnerSchematic({
+                name: 'fast',
+                path: 'src/app/first/second',
+                fast: true
+            });
 
             const specContent = tree.readContent('/src/app/first/second/fast/fast.component.spec.ts');
             expect(specContent).toMatch(/beforeAll\(/);
@@ -162,7 +191,10 @@ describe('ng-test-runner-schematics', () => {
         it('skipImport should create TestModule in spec and run it', () => {
             const tree = runNgTestRunnerSchematic({name: 'foo', path: 'src/app', skipImport: true});
 
-            verifyThat.in(tree).file('/src/app/foo/foo.component.spec.ts').exists();
+            verifyThat
+                .in(tree)
+                .file('/src/app/foo/foo.component.spec.ts')
+                .exists();
             const specContent = tree.readContent('/src/app/foo/foo.component.spec.ts');
             expect(specContent).toMatch(/app = test\(TestModule\)/);
             expect(specContent).toMatch(/import { NgModule }/);
@@ -171,8 +203,7 @@ describe('ng-test-runner-schematics', () => {
         });
     });
 
-    function runNgTestRunnerSchematic(options?: { [key: string]: any }) {
-
+    function runNgTestRunnerSchematic(options?: {[key: string]: any}) {
         const opts = {
             name: 'user',
             path: 'src/app',
@@ -185,7 +216,8 @@ describe('ng-test-runner-schematics', () => {
     const verifyThat = {
         in: (tree: UnitTestTree) => ({
             file: (filename: string) => ({
-                exists: () => expect(tree.files.indexOf(filename)).toBeGreaterThan(0, noFileInTreeError(filename, tree)),
+                exists: () =>
+                    expect(tree.files.indexOf(filename)).toBeGreaterThan(0, noFileInTreeError(filename, tree)),
                 doesNotExist: () => expect(tree.files.indexOf(filename)).toBeLessThan(0, fileExistsError(filename))
             })
         })

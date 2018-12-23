@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { SchematicsException, Tree } from '@angular-devkit/schematics';
+import {SchematicsException, Tree} from '@angular-devkit/schematics';
 
 export function getFirstNgModuleName(source: ts.SourceFile): string | undefined {
     // First, find the @NgModule decorators.
@@ -27,13 +27,10 @@ function findClassDeclarationParent(node: ts.Node): ts.ClassDeclaration | undefi
     return node.parent && findClassDeclarationParent(node.parent);
 }
 
-
-export function getDecoratorMetadata(source: ts.SourceFile, identifier: string,
-                                     module: string): ts.Node[] {
-    const angularImports: { [name: string]: string }
-        = findNodes(source, ts.SyntaxKind.ImportDeclaration)
+export function getDecoratorMetadata(source: ts.SourceFile, identifier: string, module: string): ts.Node[] {
+    const angularImports: {[name: string]: string} = findNodes(source, ts.SyntaxKind.ImportDeclaration)
         .map((node: ts.ImportDeclaration) => _angularImportsFromNode(node))
-        .reduce((acc: { [name: string]: string }, current: { [name: string]: string }) => {
+        .reduce((acc: {[name: string]: string}, current: {[name: string]: string}) => {
             for (const key of Object.keys(current)) {
                 acc[key] = current[key];
             }
@@ -43,16 +40,17 @@ export function getDecoratorMetadata(source: ts.SourceFile, identifier: string,
 
     return getSourceNodes(source)
         .filter(node => {
-            return node.kind == ts.SyntaxKind.Decorator
-                && (node as ts.Decorator).expression.kind == ts.SyntaxKind.CallExpression;
+            return (
+                node.kind == ts.SyntaxKind.Decorator &&
+                (node as ts.Decorator).expression.kind == ts.SyntaxKind.CallExpression
+            );
         })
         .map(node => (node as ts.Decorator).expression as ts.CallExpression)
         .filter(expr => {
             if (expr.expression.kind == ts.SyntaxKind.Identifier) {
                 const id = expr.expression as ts.Identifier;
 
-                return id.getFullText(source) == identifier
-                    && angularImports[id.getFullText(source)] === module;
+                return id.getFullText(source) == identifier && angularImports[id.getFullText(source)] === module;
             } else if (expr.expression.kind == ts.SyntaxKind.PropertyAccessExpression) {
                 // This covers foo.NgModule when importing * as foo.
                 const paExpr = expr.expression as ts.PropertyAccessExpression;
@@ -64,13 +62,12 @@ export function getDecoratorMetadata(source: ts.SourceFile, identifier: string,
                 const id = paExpr.name.text;
                 const moduleId = (paExpr.expression as ts.Identifier).getText(source);
 
-                return id === identifier && (angularImports[moduleId + '.'] === module);
+                return id === identifier && angularImports[moduleId + '.'] === module;
             }
 
             return false;
         })
-        .filter(expr => expr.arguments[0]
-            && expr.arguments[0].kind == ts.SyntaxKind.ObjectLiteralExpression)
+        .filter(expr => expr.arguments[0] && expr.arguments[0].kind == ts.SyntaxKind.ObjectLiteralExpression)
         .map(expr => expr.arguments[0] as ts.ObjectLiteralExpression);
 }
 
@@ -120,7 +117,7 @@ export function getSourceNodes(sourceFile: ts.SourceFile): ts.Node[] {
     return result;
 }
 
-function _angularImportsFromNode(node: ts.ImportDeclaration): { [name: string]: string } {
+function _angularImportsFromNode(node: ts.ImportDeclaration): {[name: string]: string} {
     const ms = node.moduleSpecifier;
     let modulePath: string;
     switch (ms.kind) {
@@ -151,8 +148,8 @@ function _angularImportsFromNode(node: ts.ImportDeclaration): { [name: string]: 
                 const namedImports = nb as ts.NamedImports;
 
                 return namedImports.elements
-                    .map((is: ts.ImportSpecifier) => is.propertyName ? is.propertyName.text : is.name.text)
-                    .reduce((acc: { [name: string]: string }, curr: string) => {
+                    .map((is: ts.ImportSpecifier) => (is.propertyName ? is.propertyName.text : is.name.text))
+                    .reduce((acc: {[name: string]: string}, curr: string) => {
                         acc[curr] = modulePath;
 
                         return acc;

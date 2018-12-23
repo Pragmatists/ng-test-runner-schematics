@@ -5,17 +5,18 @@ import {
     filter,
     MergeStrategy,
     mergeWith,
-    move, noop,
+    move,
+    noop,
     Rule,
     template,
     Tree,
     url
 } from '@angular-devkit/schematics';
-import { SchemaOptions } from './schema';
-import { findModuleFromOptions } from '@schematics/angular/utility/find-module';
-import { getFirstNgModuleName, getTsSourceFile } from './utils';
-import { normalize, Path, relative, strings } from '@angular-devkit/core';
-import { basename } from 'path';
+import {SchemaOptions} from './schema';
+import {findModuleFromOptions} from '@schematics/angular/utility/find-module';
+import {getFirstNgModuleName, getTsSourceFile} from './utils';
+import {normalize, Path, relative, strings} from '@angular-devkit/core';
+import {basename} from 'path';
 
 const testHelperDir = '/src/test-utils';
 const speedHackName = 'test-speed-hack.ts';
@@ -29,9 +30,9 @@ function findModuleClass(tree: Tree, modulePath: Path) {
 }
 
 function getMovePath(options: SchemaOptions): Path {
-    return (options.flat) ?
-        normalize('/' + options.path) :
-        normalize('/' + options.path + '/' + strings.dasherize(options.name));
+    return options.flat
+        ? normalize('/' + options.path)
+        : normalize('/' + options.path + '/' + strings.dasherize(options.name));
 }
 
 function getModuleTemplatePath(movePath: Path, modulePath: Path) {
@@ -42,12 +43,11 @@ function getModuleTemplatePath(movePath: Path, modulePath: Path) {
     return moduleTemplatePath.substring(0, moduleTemplatePath.length - 3);
 }
 
-export default function (options: SchemaOptions): Rule {
-
+export default function(options: SchemaOptions): Rule {
     return chain([
         externalSchematic('@schematics/angular', 'component', {
-                ...options,
-                spec: false
+            ...options,
+            spec: false
         }),
         (tree: Tree) => {
             const movePath = getMovePath(options);
