@@ -4,6 +4,7 @@
   "description": "Schematics for ng-test-runner",
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "pretest" : "prettylint \"src/**!(files)/*.ts\"",
     "test": "npm run build && jasmine src/**/*_spec.js"
   },
   "keywords": [
@@ -23,6 +24,7 @@
     "@types/node": "^8.0.31",
     "jasmine": "^2.8.0",
     "prettier": "1.15.3",
+    "prettylint": "^1.0.0",
     "schematics-utilities": "^1.1.1"
   }
 }
