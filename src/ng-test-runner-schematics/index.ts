@@ -39,7 +39,7 @@ function getModuleTemplatePath(movePath: Path, modulePath: Path) {
     if (!modulePath) {
         return '';
     }
-    let moduleTemplatePath: string = relative(movePath, modulePath);
+    const moduleTemplatePath: string = relative(movePath, modulePath);
     return moduleTemplatePath.substring(0, moduleTemplatePath.length - 3);
 }
 

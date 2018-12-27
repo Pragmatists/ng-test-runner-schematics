@@ -41,17 +41,17 @@ export function getDecoratorMetadata(source: ts.SourceFile, identifier: string, 
     return getSourceNodes(source)
         .filter(node => {
             return (
-                node.kind == ts.SyntaxKind.Decorator &&
-                (node as ts.Decorator).expression.kind == ts.SyntaxKind.CallExpression
+                node.kind === ts.SyntaxKind.Decorator &&
+                (node as ts.Decorator).expression.kind === ts.SyntaxKind.CallExpression
             );
         })
         .map(node => (node as ts.Decorator).expression as ts.CallExpression)
         .filter(expr => {
-            if (expr.expression.kind == ts.SyntaxKind.Identifier) {
+            if (expr.expression.kind === ts.SyntaxKind.Identifier) {
                 const id = expr.expression as ts.Identifier;
 
-                return id.getFullText(source) == identifier && angularImports[id.getFullText(source)] === module;
-            } else if (expr.expression.kind == ts.SyntaxKind.PropertyAccessExpression) {
+                return id.getFullText(source) === identifier && angularImports[id.getFullText(source)] === module;
+            } else if (expr.expression.kind === ts.SyntaxKind.PropertyAccessExpression) {
                 // This covers foo.NgModule when importing * as foo.
                 const paExpr = expr.expression as ts.PropertyAccessExpression;
                 // If the left expression is not an identifier, just give up at that point.
@@ -67,12 +67,12 @@ export function getDecoratorMetadata(source: ts.SourceFile, identifier: string, 
 
             return false;
         })
-        .filter(expr => expr.arguments[0] && expr.arguments[0].kind == ts.SyntaxKind.ObjectLiteralExpression)
+        .filter(expr => expr.arguments[0] && expr.arguments[0].kind === ts.SyntaxKind.ObjectLiteralExpression)
         .map(expr => expr.arguments[0] as ts.ObjectLiteralExpression);
 }
 
 export function findNodes(node: ts.Node, kind: ts.SyntaxKind, max = Infinity): ts.Node[] {
-    if (!node || max == 0) {
+    if (!node || max === 0) {
         return [];
     }
 
@@ -83,9 +83,9 @@ export function findNodes(node: ts.Node, kind: ts.SyntaxKind, max = Infinity): t
     }
     if (max > 0) {
         for (const child of node.getChildren()) {
-            findNodes(child, kind, max).forEach(node => {
+            findNodes(child, kind, max).forEach(n => {
                 if (max > 0) {
-                    arr.push(node);
+                    arr.push(n);
                 }
                 max--;
             });
@@ -138,7 +138,7 @@ function _angularImportsFromNode(node: ts.ImportDeclaration): {[name: string]: s
             return {};
         } else if (node.importClause.namedBindings) {
             const nb = node.importClause.namedBindings;
-            if (nb.kind == ts.SyntaxKind.NamespaceImport) {
+            if (nb.kind === ts.SyntaxKind.NamespaceImport) {
                 // This is of the form `import * as name from 'path'`. Return `name.`.
                 return {
                     [(nb as ts.NamespaceImport).name.text + '.']: modulePath
