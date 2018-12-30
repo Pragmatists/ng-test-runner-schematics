@@ -7,7 +7,7 @@
     "prettylint": "prettylint \"src/**!(files)/*.ts\"",
     "tslint": "tslint \"src/**!(files)/*.ts\"",
     "pretest": "npm run tslint && npm run prettylint",
-    "test": "npm run build && jasmine src/**/*_spec.js"
+    "test": "npm run build && jasmine src/**/*spec.js"
   },
   "keywords": [
     "schematics",

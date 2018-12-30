@@ -50,6 +50,9 @@ export default function(options: SchemaOptions): Rule {
             spec: false
         }),
         (tree: Tree) => {
+            if (!options.spec) {
+                return noop();
+            }
             const movePath = getMovePath(options);
             const modulePath = findModuleFromOptions(tree, options);
             const moduleClass = findModuleClass(tree, modulePath);

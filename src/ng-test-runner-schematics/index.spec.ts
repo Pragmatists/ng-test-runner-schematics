@@ -2,6 +2,7 @@ import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/test
 import {Schema as WorkspaceOptions} from '@schematics/angular/workspace/schema';
 import {Schema as ApplicationOptions} from '@schematics/angular/application/schema';
 import {EOL} from 'os';
+import {SchemaOptions} from './schema';
 
 const collectionPath = require.resolve('../collection.json');
 
@@ -201,9 +202,22 @@ describe('ng-test-runner-schematics', () => {
             expect(specContent).toMatch(/@NgModule\({/);
             expect(specContent).toMatch(/class TestModule {/);
         });
+
+        it('for spec set to false should not generate spec file', () => {
+            const tree = runNgTestRunnerSchematic({name: 'without', path: 'src/app', spec: false});
+
+            verifyThat
+                .in(tree)
+                .file('/src/app/without/without.component.ts')
+                .exists();
+            verifyThat
+                .in(tree)
+                .file('/src/app/without/without.component.spec.ts')
+                .doesNotExist();
+        });
     });
 
-    function runNgTestRunnerSchematic(options?: {[key: string]: any}) {
+    function runNgTestRunnerSchematic(options?: Partial<SchemaOptions>) {
         const opts = {
             name: 'user',
             path: 'src/app',
