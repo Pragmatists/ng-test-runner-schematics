@@ -70,7 +70,7 @@ describe('ng-test-runner-schematics', () => {
         expect(specContent).toMatch(/import.*AppModule.*from '..\/app.module'/);
     });
 
-    it('spec should contain have correct path to module if run deeply in directory structure', () => {
+    it('spec should contain correct path to module if run deeply in directory structure', () => {
         const tree = runNgTestRunnerSchematic({name: 'foo', path: 'src/app/first/second/third'});
 
         const specContent = tree.readContent('/src/app/first/second/third/foo/foo.component.spec.ts');
@@ -214,6 +214,22 @@ describe('ng-test-runner-schematics', () => {
                 .in(tree)
                 .file('/src/app/without/without.component.spec.ts')
                 .doesNotExist();
+        });
+
+        it('for module options should use this module in spec', () => {
+            appTree.create(
+                'src/app/todo/todo.module.ts',
+                `import { NgModule } from '@angular/core'; 
+                @NgModule({}) 
+                export class TodoModule {}`
+            );
+            appTree.create('src/app/todo/list/list.module.ts', '');
+
+            const tree = runNgTestRunnerSchematic({name: 'foo', path: 'src/app/todo/list', module: 'todo'});
+
+            const specContent = tree.readContent('/src/app/todo/list/foo/foo.component.spec.ts');
+            expect(specContent).toMatch(/import.*TodoModule.*from '..\/..\/todo.module'/);
+            expect(specContent).toMatch(/app = test\(TodoModule\)/);
         });
     });
 
