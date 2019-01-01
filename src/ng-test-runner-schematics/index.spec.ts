@@ -1,6 +1,7 @@
+import {parseJsonAst} from '@angular-devkit/core';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
-import {Schema as WorkspaceOptions} from '@schematics/angular/workspace/schema';
 import {Schema as ApplicationOptions} from '@schematics/angular/application/schema';
+import {Schema as WorkspaceOptions} from '@schematics/angular/workspace/schema';
 import {EOL} from 'os';
 import {SchemaOptions} from './schema';
 
@@ -231,6 +232,17 @@ describe('ng-test-runner-schematics', () => {
             expect(specContent).toMatch(/import.*TodoModule.*from '..\/..\/todo.module'/);
             expect(specContent).toMatch(/app = test\(TodoModule\)/);
         });
+
+        it('should use styleext from angular.json', () => {
+            setStyleextInAngularJson('scss');
+
+            const tree = runNgTestRunnerSchematic({name: 'foo', path: 'src/app'});
+
+            verifyThat
+                .in(tree)
+                .file('/src/app/foo/foo.component.scss')
+                .exists();
+        });
     });
 
     function runNgTestRunnerSchematic(options?: Partial<SchemaOptions>) {
@@ -260,5 +272,22 @@ describe('ng-test-runner-schematics', () => {
     function noFileInTreeError(filename: string, tree: UnitTestTree) {
         const files = tree.files.join(`,${EOL}\t\t`);
         return `File "${filename}" not found within:${EOL}\t\t${files}`;
+    }
+
+    function setStyleextInAngularJson(style: string) {
+        const angularJson = appTree.read('angular.json');
+        const config = parseJsonAst(angularJson.toString());
+        const recorder = appTree.beginUpdate('angular.json');
+        recorder.insertRight(
+            config.end.offset - 1,
+            `,
+            "schematics": {
+                "@schematics/angular:component": {
+                    "styleext": "${style}"
+                }
+            }            
+            `
+        );
+        appTree.commitUpdate(recorder);
     }
 });

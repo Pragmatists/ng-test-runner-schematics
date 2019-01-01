@@ -1,3 +1,4 @@
+import {JsonAstObject, normalize, parseJsonAst, Path, relative, strings} from '@angular-devkit/core';
 import {
     apply,
     chain,
@@ -12,11 +13,11 @@ import {
     Tree,
     url
 } from '@angular-devkit/schematics';
-import {SchemaOptions} from './schema';
 import {findModuleFromOptions} from '@schematics/angular/utility/find-module';
-import {getFirstNgModuleName, getTsSourceFile} from './utils';
-import {normalize, Path, relative, strings} from '@angular-devkit/core';
 import {basename} from 'path';
+import {findPropertyInAstObject} from 'schematics-utilities/dist/angular/json-utils';
+import {SchemaOptions} from './schema';
+import {getFirstNgModuleName, getTsSourceFile} from './utils';
 
 const testHelperDir = '/src/test-utils';
 const speedHackName = 'test-speed-hack.ts';
@@ -45,10 +46,14 @@ function getModuleTemplatePath(movePath: Path, modulePath: Path) {
 
 export default function(options: SchemaOptions): Rule {
     return chain([
-        externalSchematic('@schematics/angular', 'component', {
-            ...options,
-            spec: false
-        }),
+        (tree: Tree) => {
+            const styleext = findStyleext(tree);
+            return externalSchematic('@schematics/angular', 'component', {
+                ...options,
+                spec: false,
+                styleext
+            });
+        },
         (tree: Tree) => {
             if (!options.spec) {
                 return noop();
@@ -97,4 +102,22 @@ function speedHackPath(movePath: Path) {
 
 function basenameTs(filename: string) {
     return basename(filename, '.ts');
+}
+
+function findStyleext(tree: Tree) {
+    const angularJson = tree.read('angular.json');
+    const config = parseJsonAst(angularJson.toString());
+    const schematics = findPropertyInAstObject(config as JsonAstObject, 'schematics');
+    if (!schematics) {
+        return 'css';
+    }
+    const component = findPropertyInAstObject(schematics as JsonAstObject, '@schematics/angular:component');
+    if (!component) {
+        return 'css';
+    }
+    const styleext = findPropertyInAstObject(component as JsonAstObject, 'styleext');
+    if (!styleext) {
+        return 'css';
+    }
+    return styleext.value;
 }
