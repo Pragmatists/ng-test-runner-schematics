@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "id": "NgTestRunnerSchematicsNgAdd",
+    "title": "ng-add for ng-test-runner-schematics",
+    "type": "object",
+    "properties": {
+        "skipPackageJson": {
+            "type": "boolean",
+            "default": false,
+            "description": "Do not add ng-test-runner dependency to package.json"
+        }
+    },
+    "required": []
+}

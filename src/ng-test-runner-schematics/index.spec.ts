@@ -1,9 +1,8 @@
 import {parseJsonAst} from '@angular-devkit/core';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
-import {Schema as ApplicationOptions} from '@schematics/angular/application/schema';
-import {Schema as WorkspaceOptions} from '@schematics/angular/workspace/schema';
 import {EOL} from 'os';
 import {SchemaOptions} from './schema';
+import {createWorkspace} from '../utils/testing';
 
 const collectionPath = require.resolve('../collection.json');
 
@@ -11,26 +10,9 @@ describe('ng-test-runner-schematics', () => {
     const schematicRunner = new SchematicTestRunner('ng-test-runner-schematics', collectionPath);
 
     let appTree: UnitTestTree;
-    const workspaceOptions: WorkspaceOptions = {
-        name: 'workspace',
-        newProjectRoot: 'projects',
-        version: '7.0.2'
-    };
-
-    const appOptions: ApplicationOptions = {
-        name: 'bar',
-        projectRoot: '',
-        inlineStyle: false,
-        inlineTemplate: false,
-        routing: false,
-        style: 'css',
-        skipTests: false,
-        skipPackageJson: false
-    };
 
     beforeEach(() => {
-        appTree = schematicRunner.runExternalSchematic('@schematics/angular', 'workspace', workspaceOptions);
-        appTree = schematicRunner.runExternalSchematic('@schematics/angular', 'application', appOptions, appTree);
+        appTree = createWorkspace(schematicRunner);
     });
 
     it('generates all component files', () => {

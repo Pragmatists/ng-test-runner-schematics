@@ -6,6 +6,11 @@
             "description": "Schematic that generates component with spec in ng-test-runner format",
             "factory": "./ng-test-runner-schematics",
             "schema": "./ng-test-runner-schematics/schema.json"
+        },
+        "ng-add": {
+            "description": "Adds ng-test-runner-schematics to project (also with ng-test-runner dependency)",
+            "factory": "./ng-add",
+            "schema": "./ng-add/schema.json"
         }
     }
 }
