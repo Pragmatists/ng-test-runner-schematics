@@ -1,3 +1,23 @@
 # Ignores TypeScript files, but keeps definitions.
 *.ts
 !*.d.ts
+*.js.map
+# speed hack
+test-speed-hack.d.ts
+test-speed-hack.js
+!test-speed-hack.ts
+# testing
+src/utils/testing*
+*.spec.*
+# editors
+.idea/
+*.iml
+.vscode/
+tsconfig.json
+tslint.json
+.gitignore
+.travis.yml
+.prettierignore
+.prettierrc
+
+!__name@dasherize__.component.spec.ts
