@@ -18,6 +18,8 @@ import {basename} from 'path';
 import {findPropertyInAstObject} from 'schematics-utilities/dist/angular/json-utils';
 import {SchemaOptions} from './schema';
 import {getFirstNgModuleName, getTsSourceFile} from './utils';
+import {buildDefaultPath} from 'schematics-utilities';
+import {getProject} from '@schematics/angular/utility/project';
 
 const testHelperDir = '/src/test-utils';
 const speedHackName = 'test-speed-hack.ts';
@@ -44,6 +46,13 @@ function getModuleTemplatePath(movePath: Path, modulePath: Path) {
     return moduleTemplatePath.substring(0, moduleTemplatePath.length - 3);
 }
 
+function setupPathInOptions(tree: Tree, options: SchemaOptions) {
+    const project = getProject(tree, options.project);
+    if (options.path === undefined) {
+        options.path = buildDefaultPath(project);
+    }
+}
+
 export default function(options: SchemaOptions): Rule {
     return chain([
         (tree: Tree) => {
@@ -58,6 +67,7 @@ export default function(options: SchemaOptions): Rule {
             if (!options.spec) {
                 return noop();
             }
+            setupPathInOptions(tree, options);
             const movePath = getMovePath(options);
             const modulePath = findModuleFromOptions(tree, options);
             const moduleClass = findModuleClass(tree, modulePath);

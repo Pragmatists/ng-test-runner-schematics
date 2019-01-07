@@ -60,6 +60,13 @@ describe('ng-test-runner-schematics', () => {
         expect(specContent).toMatch(/import.*AppModule.*from '..\/..\/..\/..\/app.module'/);
     });
 
+    it('spec should contain correct path to module if run from root directory', () => {
+        const tree = runNgTestRunnerSchematic({name: 'abc', path: undefined});
+
+        const specContent = tree.readContent('/src/app/abc/abc.component.spec.ts');
+        expect(specContent).toMatch(/import.*AppModule.*from '..\/app.module'/);
+    });
+
     it('spec should run module', () => {
         const tree = runNgTestRunnerSchematic({name: 'foo', path: 'src/app'});
 
