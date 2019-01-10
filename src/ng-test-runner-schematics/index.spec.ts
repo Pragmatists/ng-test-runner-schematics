@@ -232,6 +232,20 @@ describe('ng-test-runner-schematics', () => {
                 .file('/src/app/foo/foo.component.scss')
                 .exists();
         });
+
+        it('should use styleext specified in project in angular.json', () => {
+            const config = JSON.parse(appTree.readContent('/angular.json'));
+            config.projects.bar.schematics['@schematics/angular:component'] = {};
+            config.projects.bar.schematics['@schematics/angular:component'].styleext = 'scss';
+            appTree.overwrite('/angular.json', JSON.stringify(config, null, 2));
+
+            const tree = runNgTestRunnerSchematic({name: 'test', path: 'src/app'});
+
+            verifyThat
+                .in(tree)
+                .file('/src/app/test/test.component.scss')
+                .exists();
+        });
     });
 
     function runNgTestRunnerSchematic(options?: Partial<SchemaOptions>) {
