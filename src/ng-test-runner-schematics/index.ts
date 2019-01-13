@@ -23,6 +23,14 @@ import {getProject} from '@schematics/angular/utility/project';
 const testHelperDir = '/src/test-utils';
 const speedHackName = 'test-speed-hack.ts';
 
+export default function(options: SchemaOptions): Rule {
+    return chain([
+        (tree: Tree) => callComponentSchematic(options, tree),
+        (tree: Tree) => createNgTestRunnerSpec(options, tree),
+        (tree: Tree) => createSpeedHackFile(options, tree)
+    ]);
+}
+
 function findModuleClass(tree: Tree, modulePath: Path) {
     if (!modulePath) {
         return null;
@@ -51,56 +59,53 @@ function setupPathInOptions(tree: Tree, options: SchemaOptions) {
         options.path = buildDefaultPath(project);
     }
 }
+function callComponentSchematic(options: SchemaOptions, tree: Tree): Rule {
+    const opts = {...options, spec: false};
+    const styleext = findStyleext(tree, options);
+    if (styleext) {
+        opts.styleext = styleext;
+    }
+    return externalSchematic('@schematics/angular', 'component', opts);
+}
 
-export default function(options: SchemaOptions): Rule {
-    return chain([
-        (tree: Tree) => {
-            const opts = {...options, spec: false};
-            const styleext = findStyleext(tree, options);
-            if (styleext) {
-                opts.styleext = styleext;
-            }
-            return externalSchematic('@schematics/angular', 'component', opts);
-        },
-        (tree: Tree) => {
-            if (!options.spec) {
-                return noop();
-            }
-            setupPathInOptions(tree, options);
-            const movePath = getMovePath(options);
-            const modulePath = findModuleFromOptions(tree, options);
-            const moduleClass = findModuleClass(tree, modulePath);
-            const moduleTemplatePath = getModuleTemplatePath(movePath, modulePath);
-            const speedHackTemplatePath: string = speedHackPath(movePath);
-            const templateOptions = {
-                moduleClass,
-                moduleTemplatePath,
-                speedHackTemplatePath
-            };
-            const templateSource = apply(url('./files'), [
-                filter(file => file.endsWith('spec.ts')),
-                template({
-                    ...strings,
-                    ...options,
-                    ...templateOptions
-                }),
-                move(movePath)
-            ]);
+function createNgTestRunnerSpec(options: SchemaOptions, tree: Tree): Rule {
+    if (!options.spec) {
+        return noop();
+    }
+    setupPathInOptions(tree, options);
+    const movePath = getMovePath(options);
+    const modulePath = findModuleFromOptions(tree, options);
+    const moduleClass = findModuleClass(tree, modulePath);
+    const moduleTemplatePath = getModuleTemplatePath(movePath, modulePath);
+    const speedHackTemplatePath: string = speedHackPath(movePath);
+    const templateOptions = {
+        moduleClass,
+        moduleTemplatePath,
+        speedHackTemplatePath
+    };
 
-            return mergeWith(templateSource, MergeStrategy.Default);
-        },
-        (tree: Tree) => {
-            if (tree.exists(testHelperDir + '/' + speedHackName)) {
-                return noop();
-            }
-            const source = apply(url('./files'), [
-                filter(file => file.includes(speedHackName)),
-                filter(() => options.fast),
-                move(testHelperDir)
-            ]);
-            return mergeWith(source, MergeStrategy.AllowOverwriteConflict);
-        }
+    const templateSource = apply(url('./files'), [
+        filter(file => file.endsWith('spec.ts')),
+        template({
+            ...strings,
+            ...options,
+            ...templateOptions
+        }),
+        move(movePath)
     ]);
+    return mergeWith(templateSource, MergeStrategy.Default);
+}
+
+function createSpeedHackFile(options: SchemaOptions, tree: Tree): Rule {
+    if (tree.exists(testHelperDir + '/' + speedHackName)) {
+        return noop();
+    }
+    const source = apply(url('./files'), [
+        filter(file => file.includes(speedHackName)),
+        filter(() => options.fast),
+        move(testHelperDir)
+    ]);
+    return mergeWith(source, MergeStrategy.AllowOverwriteConflict);
 }
 
 function speedHackPath(movePath: Path) {
