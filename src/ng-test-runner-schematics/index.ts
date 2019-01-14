@@ -77,7 +77,7 @@ function createNgTestRunnerSpec(options: SchemaOptions, tree: Tree): Rule {
     const modulePath = findModuleFromOptions(tree, options);
     const moduleClass = findModuleClass(tree, modulePath);
     const moduleTemplatePath = getModuleTemplatePath(movePath, modulePath);
-    const speedHackTemplatePath: string = speedHackPath(movePath);
+    const speedHackTemplatePath = speedHackPath(movePath);
     const templateOptions = {
         moduleClass,
         moduleTemplatePath,
