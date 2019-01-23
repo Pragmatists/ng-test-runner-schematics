@@ -255,7 +255,7 @@ describe('ng-test-runner-schematics', () => {
             project: 'bar',
             ...options
         };
-        return schematicRunner.runSchematic('ng-test-runner-schematics', opts, appTree);
+        return schematicRunner.runSchematic('component', opts, appTree);
     }
 
     const verifyThat = {
