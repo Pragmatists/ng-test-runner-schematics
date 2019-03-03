@@ -21,3 +21,4 @@ tslint.json
 .prettierrc
 
 !__name@dasherize__.component.spec.ts
+doc/*
