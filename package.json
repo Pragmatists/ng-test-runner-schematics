@@ -1,6 +1,6 @@
 {
   "name": "ng-test-runner-schematics",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Schematics for ng-test-runner",
   "scripts": {
     "build": "tsc -p tsconfig.json",
